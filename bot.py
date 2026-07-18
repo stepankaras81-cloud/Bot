@@ -16,7 +16,7 @@ TOKEN = "8868277445:AAEPYSE-uoej11anci9jpiaoDYsOqL_-tps"
 PHOTO_URL = "https://i.postimg.cc/hPNrFrmg/IMG-4180.jpg"
 
 # ССЫЛКА НА MINI APP
-MINI_APP_URL = "https://verifying-production.up.railway.app"
+MINI_APP_URL = "verifying-production.up.railway.app"
 
 # Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
