@@ -1,5 +1,5 @@
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, ContextTypes
 
 # Настройка логирования
@@ -12,19 +12,18 @@ logger = logging.getLogger(__name__)
 # ТОКЕН БОТА
 TOKEN = "8868277445:AAEPYSE-uoej11anci9jpiaoDYsOqL_-tps"
 
-# Ссылка на фото
-PHOTO_URL = "https://i.postimg.cc/BPbTnkcs/IMG-4158.png"
-
-# ССЫЛКА НА MINI APP (твой URL на Railway)
-MINI_APP_URL = "https://verifying-production.up.railway.app"
+# Ссылка на аватарку (твоя новая)
+PHOTO_URL = "https://i.postimg.cc/4KGSwvT6/IMG-4158.jpg"
 
 # Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Кнопка Verify Account
     keyboard = [
-        [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
+        [InlineKeyboardButton("✅ Verify Account", callback_data='verify')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
+    # Текст сообщения (ТОЧНО КАК НА СКРИНШОТЕ)
     message = (
         f"🎩 *Portals Verification*\n\n"
         f"**Final Verification Required: Claim Your Gift**\n\n"
@@ -34,6 +33,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"A single tap below and the asset is on its way."
     )
     
+    # Отправляем фото с подписью и кнопкой
     await update.message.reply_photo(
         photo=PHOTO_URL,
         caption=message,
@@ -41,19 +41,39 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
+# Обработчик нажатия кнопки
+async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    
+    if query.data == 'verify':
+        # Меняем текст и убираем кнопку
+        await query.edit_message_caption(
+            caption="✅ *Account Verified!*\n\n"
+                    "Your JollyChimp #20,203 is on its way! 🎩✨\n\n"
+                    "---\n"
+                    "**FULL WORK, НОВЫЙ БОТ УЖЕ В ЧАТЕ**",
+            parse_mode='Markdown'
+        )
+        # Убираем кнопку
+        await query.edit_message_reply_markup(reply_markup=None)
+
 # Команда /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 *Бот для верификации*\n\n"
-        "Нажми /start и затем 'Verify Account' для открытия Mini App",
+        "Используй /start для начала работы\n"
+        "Нажми 'Verify Account' для подтверждения",
         parse_mode='Markdown'
     )
 
 def main():
     application = Application.builder().token(TOKEN).build()
     
+    # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CallbackQueryHandler(button_callback))
     
     logger.info("🚀 Бот запущен и работает!")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
