@@ -1,6 +1,6 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 # Настройка логирования
 logging.basicConfig(
@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 TOKEN = "8868277445:AAEPYSE-uoej11anci9jpiaoDYsOqL_-tps"
 
 # Ссылка на аватарку
-PHOTO_URL = "https://postimg.cc/GHJYGvzS"
+PHOTO_URL = "https://i.postimg.cc/hPNrFrmg/IMG-4180.jpg"
 
-# ⚡ ССЫЛКА НА MINI APP (твой URL)
-MINI_APP_URL = "verifing-production.up.railway.app"
+# ССЫЛКА НА MINI APP
+MINI_APP_URL = "https://verifying-production.up.railway.app"
 
 # Функция для команды /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -42,6 +42,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
+# Обработчик нажатия кнопки (если нужен)
+async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    # Здесь можно добавить логику, если кнопка будет callback, а не web_app
+
 # Команда /help
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -51,10 +57,13 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 def main():
+    # Создаем приложение
     application = Application.builder().token(TOKEN).build()
     
+    # Регистрируем обработчики
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CallbackQueryHandler(button_callback))
     
     logger.info("🚀 Бот запущен и работает!")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
