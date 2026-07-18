@@ -73,7 +73,7 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # Извлекаем ID подарка из ссылки
         gift_id = query.split('/')[-1] if '/' in query else 'JollyChimp-20203'
         
-        # ⚡ ТОЧНЫЙ ТЕКСТ КАК ТЫ НАПИСАЛ
+        # ⚡ ТЕКСТ КАК НА ФОТО
         message = (
             f"❄️ *Gift temporarily unavailable*\n\n"
             f"*{gift_id}* is currently undergoing a security review.\n\n"
